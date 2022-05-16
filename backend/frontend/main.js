@@ -32,6 +32,8 @@ const showAllAcc = async () => {
     const response = await fetch('/api/accounts');
     accounts = await response.json();
 
+    console.log('hoho')
+
     postAccs.innerHTML = accounts.map(accTemplate).join('');
 
     const deleteBtns = document.querySelectorAll("[data-function='delete']");
