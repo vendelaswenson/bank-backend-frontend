@@ -32,9 +32,9 @@ const showAllAcc = async () => {
     const response = await fetch('/api/accounts');
     accounts = await response.json();
 
-    console.log('hoho')
-
     postAccs.innerHTML = accounts.map(accTemplate).join('');
+
+    console.log('hoho');
 
     const deleteBtns = document.querySelectorAll("[data-function='delete']");
     const editBtns = document.querySelectorAll('[data-function="edit"]');
