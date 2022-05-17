@@ -19,6 +19,14 @@ const registerForm = document.getElementById('register');
 const accs = document.querySelector('.acc');
 const logoutBtn = document.querySelector('.logoutBtn')
 
+const input = document.querySelector('#inputamount');
+const inputBtn = document.querySelector('.inputBtn');
+const inputLabel = document.querySelector('.inputLabel')
+
+const negInput = document.querySelector('#inputnegamount');
+const inputNegBtn = document.querySelector('.inputnegBtn');
+const inputNegLabel = document.querySelector('.inputNegLabel')
+
 let editAccItem = null;
 let accounts = [];
 
@@ -43,7 +51,7 @@ loginForm.addEventListener('submit', async (e) => {
       })
     });
     const data = await res.json();
-    console.log(data);
+    welcomeElem.innerText = `Välkommen, ${data.name}!`;
     showAllAcc();
   });
   
@@ -83,20 +91,6 @@ logoutForm.addEventListener('submit', async (e) => {
     welcomeElem.innerText = `Tack för att du registrerat dig, ${data.user}!`;
   });
 
-//   const checkLoggedin = async () => { 
-//     const res = await fetch('/api/accounts/loggedin');
-//     const data = await res.json();
-  
-//     if (data.user) {
-//       loginForm.classList.add('hidden')
-//       welcomeElem.innerText = `Välkommen ${data.user}!`;
-//     } else {
-//       logoutForm.classList.add('hidden')
-//     }
-//   }
-
-//   checkLoggedin();
-
 
 
 const accTemplate = (data) => `
@@ -105,8 +99,8 @@ const accTemplate = (data) => `
     <p> Saldo: ${data.amount}</p>
     <p> Kontonummer: ${data._id}</p>
 
-    <button data-function="edit" data-postid="${data._id}">Sätt in pengar</button>
-    <button data-function="edit" data-postid="${data._id}">Ta ut pengar</button>
+    <button data-function="edit" class="inputMonBtn" data-postid="${data._id}">Sätt in pengar</button>
+    <button data-function="edit" class="depositMonBtn" data-postid="${data._id}">Ta ut pengar</button>
     <button data-function="delete" data-postid="${data._id}">Ta bort konto</button>
   </li>
 `;
@@ -118,6 +112,7 @@ const showAllAcc = async () => {
     postAccs.classList.remove('hidden');
     logoutBtn.classList.remove('hidden');
     logoutForm.classList.remove('hidden')
+    postAcc.classList.remove('hidden')
 
 
     const response = await fetch('/api/accounts');
@@ -126,7 +121,9 @@ const showAllAcc = async () => {
     postAccs.innerHTML = accounts.map(accTemplate).join('');
 
     const deleteBtns = document.querySelectorAll("[data-function='delete']");
-    const editBtns = document.querySelectorAll('[data-function="edit"]');
+    const inputMonBtn = document.querySelectorAll('.inputMonBtn');
+    const depositMonBtn = document.querySelectorAll('.depositMonBtn');
+
 
 deleteBtns.forEach((btn) => {
     btn.addEventListener("click", async (e) => {
@@ -137,15 +134,78 @@ deleteBtns.forEach((btn) => {
     });
 });
 
-editBtns.forEach((btn2) => {
-    btn2.addEventListener("click", async (e) => {
+inputMonBtn.forEach((item) => {
+    item.addEventListener('click', (e) => {
+        input.classList.remove('hidden');
+        inputBtn.classList.remove('hidden');
+        inputLabel.classList.remove('hidden');
+        postAcc.classList.add('hidden');
+
+        inputBtn.addEventListener('click', async () => {
+            accAmount.value = +editAccItem.amount + +input.value;
+
+            await fetch(`/api/accounts/update/${e.target.dataset.postid}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    name: e.name,
+                    amount: accAmount.value
+                  })
+              });
+              showAllAcc();
+              postAcc.reset();
+              input.classList.add('hidden');
+            inputBtn.classList.add('hidden');
+            inputLabel.classList.add('hidden');
+        })
+
         formMode = FORM_MODES.EDIT;
         editAccItem = accounts.find(({ _id }) => _id === e.target.dataset.postid);
-        
-        accName.value = editAccItem.name;
-        accAmount.value = editAccItem.amount;
-    });
-});
+    })
+    
+})
+
+depositMonBtn.forEach((item2) => {
+    item2.addEventListener('click', async (a) => {
+        negInput.classList.remove('hidden');
+        inputNegBtn.classList.remove('hidden');
+        inputNegLabel.classList.remove('hidden');
+        postAcc.classList.add('hidden');
+
+
+        inputNegBtn.addEventListener('click', async () => {
+    
+            accAmount.value = +editAccItem.amount - +negInput.value;
+
+            if(accAmount.value > 0) {
+                await fetch(`/api/accounts/update/${a.target.dataset.postid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        name: a.name,
+                        amount: accAmount.value
+                      })
+                  });
+                  showAllAcc();
+                  postAcc.reset();
+                  negInput.classList.add('hidden');
+                    inputNegBtn.classList.add('hidden');
+                    inputNegLabel.classList.add('hidden');
+            } else {
+                alert('You are to broke for this');
+            }
+        })
+
+        formMode = FORM_MODES.EDIT;
+        editAccItem = accounts.find(({ _id }) => _id === a.target.dataset.postid);
+        console.log(editAccItem);
+    })
+})
+
 }
 
 postAcc.addEventListener('reset', () => {

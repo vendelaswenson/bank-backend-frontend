@@ -27,13 +27,6 @@ app.use(session({
       }
 }));
 
-// const restrict = (req, res, next) => {
-//     if (req.session.user) {
-//       next();
-//     } else {
-//       res.status(401).send({ error: 'Unauthorized' });
-//     }
-//   }
 
   app.post('/api/accounts/login', async (req, res) => {
     const user = await usersCol.findOne({ name: req.body.name });
@@ -111,7 +104,7 @@ app.post('/api/accounts/new', async (req, res) => {
 res.redirect('/api/accounts')
 })
 
-app.put('/api/accounts/update/:id', async (req, res) => {
+app.post('/api/accounts/update/:id', async (req, res) => {
     await accounts.updateOne({_id: ObjectId(req.params.id)}, {$set: {...req.body}})
  
     res.json('updated')
