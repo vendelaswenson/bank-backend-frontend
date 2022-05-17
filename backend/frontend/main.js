@@ -176,10 +176,10 @@ depositMonBtn.forEach((item2) => {
 
 
         inputNegBtn.addEventListener('click', async () => {
-    
+
             accAmount.value = +editAccItem.amount - +negInput.value;
 
-            if(accAmount.value > 0) {
+            if(accAmount.value >= 0) {
                 await fetch(`/api/accounts/update/${a.target.dataset.postid}`, {
                     method: 'POST',
                     headers: {
@@ -197,6 +197,7 @@ depositMonBtn.forEach((item2) => {
                     inputNegLabel.classList.add('hidden');
             } else {
                 alert('You are to broke for this');
+        
             }
         })
 
