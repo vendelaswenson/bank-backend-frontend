@@ -86,9 +86,16 @@ logoutForm.addEventListener('submit', async (e) => {
       })
     });
     const data = await res.json();
-    showAllAcc();
+    console.log(data);
+
+    if (data.success) {
+        showAllAcc();
+        welcomeElem.innerText = `Tack för att du registrerat dig, ${data.user}!`;
+    } else {
+        welcomeElem.innerText = `Error: Användarnamnet finns redan`;
+    }
     
-    welcomeElem.innerText = `Tack för att du registrerat dig, ${data.user}!`;
+   
   });
 
 
@@ -140,12 +147,15 @@ inputMonBtn.forEach((item) => {
         inputBtn.classList.remove('hidden');
         inputLabel.classList.remove('hidden');
         postAcc.classList.add('hidden');
+        negInput.classList.add('hidden');
+        inputNegBtn.classList.add('hidden');
+        inputNegLabel.classList.add('hidden');
 
         inputBtn.addEventListener('click', async () => {
             accAmount.value = +editAccItem.amount + +input.value;
 
             await fetch(`/api/accounts/update/${e.target.dataset.postid}`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                   },
@@ -173,15 +183,15 @@ depositMonBtn.forEach((item2) => {
         inputNegBtn.classList.remove('hidden');
         inputNegLabel.classList.remove('hidden');
         postAcc.classList.add('hidden');
+        input.classList.add('hidden');
+        inputBtn.classList.add('hidden');
+        inputLabel.classList.add('hidden');
 
 
         inputNegBtn.addEventListener('click', async () => {
-
             accAmount.value = +editAccItem.amount - +negInput.value;
-
-            if(accAmount.value >= 0) {
-                await fetch(`/api/accounts/update/${a.target.dataset.postid}`, {
-                    method: 'POST',
+               const res = await fetch(`/api/accounts/update/${a.target.dataset.postid}`, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                       },
@@ -190,15 +200,21 @@ depositMonBtn.forEach((item2) => {
                         amount: accAmount.value
                       })
                   });
-                  showAllAcc();
-                  postAcc.reset();
-                  negInput.classList.add('hidden');
+
+                  const data = await res.json();
+
+
+                  if (data==='updated'){
+                    showAllAcc();
+                    postAcc.reset();
+                    negInput.classList.add('hidden');
                     inputNegBtn.classList.add('hidden');
                     inputNegLabel.classList.add('hidden');
-            } else {
-                alert('You are to broke for this');
-        
-            }
+                  } else {
+                      alert('Du är för fattig')
+                      
+                  }
+                  
         })
 
         formMode = FORM_MODES.EDIT;

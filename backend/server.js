@@ -63,19 +63,18 @@ app.use(session({
   });
 
 
-  app.post('/api/accounts/register', async (req, res) => {
-    const hash = await bcrypt.hash(req.body.password, saltRounds);
-  
-    await usersCol.insertOne({
-      name: req.body.name,
-      password: hash
-    });
-  
-    res.json({
-      success: true,
-      user: req.body.name
-    });
-  });
+app.post('/api/accounts/register', async (req, res) => {
+    const user = await usersCol.findOne({name: req.body.name});
+
+    if (user) {
+        res.status(401).json({error: "User exists"})
+    } else {
+        const hash = await bcrypt.hash(req.body.password, saltRounds);
+        await usersCol.insertOne({name: req.body.name, password: hash,})
+
+        res.json({success: true, user: req.body.name,})
+    }
+})
 
 
 app.get('/api/accounts/user', (req, res) => {
@@ -104,10 +103,17 @@ app.post('/api/accounts/new', async (req, res) => {
 res.redirect('/api/accounts')
 })
 
-app.post('/api/accounts/update/:id', async (req, res) => {
-    await accounts.updateOne({_id: ObjectId(req.params.id)}, {$set: {...req.body}})
- 
-    res.json('updated')
+app.put('/api/accounts/update/:id', async (req, res) => {
+    const acc = await accounts.findOne({_id: ObjectId(req.params.id)});
+
+    console.log(acc.amount, req.body.amount);
+
+    if (req.body.amount < 0) {
+        res.status(401).json({error: "Täckning saknas"})
+    } else {
+        await accounts.updateOne({_id: ObjectId(req.params.id)}, {$set: {...req.body}})
+        res.json('updated');
+    }
  })
 
 
