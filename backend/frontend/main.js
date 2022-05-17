@@ -5,6 +5,20 @@ const accName = document.getElementById('accname');
 const accAmount = document.getElementById('accamount');
 const postAcc = document.getElementById('createacc');
 
+const loginForm = document.getElementById('login');
+const loginName = document.getElementById('loginname');
+const loginPass = document.getElementById('loginpassword');
+
+const regUser = document.getElementById('reguser');
+const regPass = document.getElementById('regpass');
+const welcomeElem = document.getElementById('welcome');
+const secretBtn = document.getElementById('secretbtn');
+const secretOutput = document.getElementById('secretoutput');
+const logoutForm = document.getElementById('logout');
+const registerForm = document.getElementById('register');
+const accs = document.querySelector('.acc');
+const logoutBtn = document.querySelector('.logoutBtn')
+
 let editAccItem = null;
 let accounts = [];
 
@@ -14,6 +28,75 @@ const FORM_MODES = {
   }
 
 let formMode = FORM_MODES.CREATE;
+
+loginForm.addEventListener('submit', async (e) => { 
+    e.preventDefault();
+  
+    const res = await fetch('/api/accounts/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: loginName.value,
+        password: loginPass.value
+      })
+    });
+    const data = await res.json();
+    console.log(data);
+    showAllAcc();
+  });
+  
+  const getUser = async () => { 
+    const res = await fetch('/api/accounts/user');
+    const user = await res.json();
+  
+    console.log(user);
+  }
+  
+getUser();
+
+logoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+  
+    await fetch('/api/accounts/logout', { method: 'POST' });
+    
+    location.reload();
+  });
+
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+  
+    const res = await fetch('/api/accounts/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: regUser.value,
+        password: regPass.value
+      })
+    });
+    const data = await res.json();
+    showAllAcc();
+    
+    welcomeElem.innerText = `Tack för att du registrerat dig, ${data.user}!`;
+  });
+
+//   const checkLoggedin = async () => { 
+//     const res = await fetch('/api/accounts/loggedin');
+//     const data = await res.json();
+  
+//     if (data.user) {
+//       loginForm.classList.add('hidden')
+//       welcomeElem.innerText = `Välkommen ${data.user}!`;
+//     } else {
+//       logoutForm.classList.add('hidden')
+//     }
+//   }
+
+//   checkLoggedin();
+
 
 
 const accTemplate = (data) => `
@@ -29,12 +112,18 @@ const accTemplate = (data) => `
 `;
 
 const showAllAcc = async () => {
+    registerForm.classList.add('hidden');
+    loginForm.classList.add('hidden');
+    accs.classList.remove('hidden');
+    postAccs.classList.remove('hidden');
+    logoutBtn.classList.remove('hidden');
+    logoutForm.classList.remove('hidden')
+
+
     const response = await fetch('/api/accounts');
     accounts = await response.json();
 
     postAccs.innerHTML = accounts.map(accTemplate).join('');
-
-    console.log('hoho');
 
     const deleteBtns = document.querySelectorAll("[data-function='delete']");
     const editBtns = document.querySelectorAll('[data-function="edit"]');
@@ -85,6 +174,3 @@ postAcc.addEventListener('submit', async (e) => {
   });
 
   
-
-
-showAllAcc();

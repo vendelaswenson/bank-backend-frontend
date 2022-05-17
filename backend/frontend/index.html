@@ -4,11 +4,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
     <h1>Bank</h1>
-<form id="createacc">
+    <form id="login">
+        <h2>Logga in</h2>
+        <label for="loginname">Användarnamn:</label>
+        <input type="text" id="loginname">
+        <br>
+        <label for="loginpassword">Lösenord:</label>
+        <input type="password" id="loginpassword">
+        <br>
+        <button>Logga in</button>
+      </form>
+
+      <p id="welcome"></p>
+      <form class ="hidden"id="logout">
+        <button class ="logoutBtn hidden">Logga ut</button>
+      </form>
+      <form id="register">
+        <h2>Registrera dig</h2>
+        <input type="text" id="reguser" name="user">
+        <input type="password" id="regpass" name="pass">
+        <button>Skapa ny användare</button>
+      </form>
+
+<form class ="hidden"id="createacc">
   <h2>Lägg till nytt konto</h2>
   <label for="accname">Namn:</label>
   <input type="text" id="accname" name="accname">
@@ -19,8 +42,8 @@
   <button>Spara</button>
   <button type="reset">Avbryt</button>
 </form>
-<h2>Konton:</h2>
-<ul id="accounts"></ul>
+<h2 class ="acc hidden">Konton:</h2>
+<ul class="acc hidden" id="accounts"></ul>
     <script src="main.js"></script>
 </body>
 </html>
