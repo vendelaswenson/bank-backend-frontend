@@ -106,8 +106,6 @@ res.redirect('/api/accounts')
 app.put('/api/accounts/update/:id', async (req, res) => {
     const acc = await accounts.findOne({_id: ObjectId(req.params.id)});
 
-    console.log(acc.amount, req.body.amount);
-
     if (req.body.amount < 0) {
         res.status(401).json({error: "Täckning saknas"})
     } else {

@@ -92,7 +92,7 @@ logoutForm.addEventListener('submit', async (e) => {
         showAllAcc();
         welcomeElem.innerText = `Tack för att du registrerat dig, ${data.user}!`;
     } else {
-        welcomeElem.innerText = `Error: Användarnamnet finns redan`;
+        alert(`Error: Användarnamnet finns redan`);
     }
     
    
@@ -211,7 +211,7 @@ depositMonBtn.forEach((item2) => {
                     inputNegBtn.classList.add('hidden');
                     inputNegLabel.classList.add('hidden');
                   } else {
-                      alert('Du är för fattig')
+                      alert('Error: Du är för fattig')
                       
                   }
                   
